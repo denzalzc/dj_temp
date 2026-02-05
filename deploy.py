@@ -54,8 +54,8 @@ def depends():
 
 
 def trash():
-    os.system('rm /etc/nginx/sites-available/default', shell=True)
-    os.system('rm /etc/nginx/sites-enabled/default', shell=True)
+    os.system('rm /etc/nginx/sites-available/default')
+    os.system('rm /etc/nginx/sites-enabled/default')
 
     return True
 
