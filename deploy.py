@@ -167,7 +167,7 @@ def nginx(domain):
         server_ip = socket.gethostbyname(hostname)
     
     config_data = {
-        'path_to_static': os.path.join(os.getcwd(), 'present', 'static'),
+        'path_to_static': os.path.join(os.getcwd(), 'base_app', 'staticfiles'),
         'path_to_media': os.path.join(os.getcwd(), 'media'),
         'project_path': os.getcwd(),
         'domain_1': domain,
