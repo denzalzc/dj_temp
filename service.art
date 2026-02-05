@@ -5,7 +5,7 @@ After=network.target
 [Service]
 User=%username%
 WorkingDirectory=%project_path%
-ExecStart=%venv_path% --workers 3 --bind unix:/run/gunicorn.sock %wsgi_module%
+ExecStart=%venv_path% --workers 3 --bind unix:/run/gunicorn.sock --chdir %project_path%/base_app base_app.wsgi:application
 Restart=always
 
 [Install]
