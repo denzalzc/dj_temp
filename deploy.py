@@ -95,6 +95,13 @@ def django_full_setup():
     )
     
     print("[+] Django setup completed")
+
+    static_dir = os.path.join(base_dir, 'staticfiles')
+    if os.path.exists(static_dir):
+        os.system(f"chown -R www-data:www-data {static_dir}")
+        os.system(f"chmod -R 755 {static_dir}")
+        print(f"[+] Fixed permissions for static files")
+
     return True
 
 def depends():
