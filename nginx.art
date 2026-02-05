@@ -1,6 +1,6 @@
 server {
     listen 80;
-    server_name %domain_1% www.%domain_1%;
+    server_name %domain_1% www.%domain_1% %server_ip%;
     root %project_path%;
 
     location /static/ {

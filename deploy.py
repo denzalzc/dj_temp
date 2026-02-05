@@ -85,11 +85,21 @@ def reload_all(domain):
     return True
 
 def nginx(domain):
+    try:
+        s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        s.connect(("8.8.8.8", 80))
+        server_ip = s.getsockname()[0]
+        s.close()
+    except:
+        hostname = socket.gethostname()
+        server_ip = socket.gethostbyname(hostname)
+    
     config_data = {
         'path_to_static': os.path.join(os.getcwd(), 'present', 'static'),
         'path_to_media': os.path.join(os.getcwd(), 'media'),
         'project_path': os.getcwd(),
-        'domain_1': domain
+        'domain_1': domain,
+        'server_ip': server_ip
     }
     
     with open('nginx.art', 'r', encoding='utf-8') as f:
@@ -109,6 +119,7 @@ def nginx(domain):
         os.remove(nginx_enabled)
     os.symlink(nginx_available, nginx_enabled)
     
+    print(f"[+] Nginx configured for domain: {domain}, IP: {server_ip}")
     return True
 
 def service(domain):
