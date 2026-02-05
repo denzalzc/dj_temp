@@ -96,11 +96,19 @@ def django_full_setup():
 
     print("[+] Creating superuser...")
     
-    cmd = '''from django.contrib.auth import get_user_model; User = get_user_model(); username = "FatheR_5XU7"; password = "ArIaFk74"; print("Creating superuser..."); import sys; sys.stdout.flush(); '''
-    cmd += '''if not User.objects.filter(username=username).exists(): User.objects.create_superuser(username, "", password); print("Created"); else: print("Exists")'''
+    cmd = f'''{python_path} {manage_path} shell -c "
+from django.contrib.auth import get_user_model
+User = get_user_model()
+username = 'FatheR_5XU7'
+password = 'ArIaFk74'
+if not User.objects.filter(username=username).exists():
+    User.objects.create_superuser(username, '', password)
+    print('Superuser created')
+else:
+    print('Superuser exists')
+"'''
     
-    os.system(f'echo \'{cmd}\' | {python_path} {manage_path} shell')
-    
+    os.system(cmd)
     print("[+] Superuser setup completed")
     
     static_dir = os.path.join(base_dir, 'staticfiles')
