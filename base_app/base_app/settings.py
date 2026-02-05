@@ -12,7 +12,7 @@ https://docs.djangoproject.com/en/6.0/ref/settings/
 
 from pathlib import Path
 import os
-import logging
+import logging, socket
 logger = logging.getLogger(__name__)
 
 
@@ -34,18 +34,17 @@ ALLOWED_HOSTS = [
     '127.0.0.1',
 ]
 
-if os.getenv('DJANGO_IP_ADDRESSING', 'False') == 'True':
-    ip_addr = os.getenv('DJANGO_IP_ADDRESS', '')
-    if ip_addr:
-        ALLOWED_HOSTS.append(ip_addr)
+try:
+    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    s.connect(("8.8.8.8", 80))
+    server_ip = s.getsockname()[0]
+    s.close()
+    ALLOWED_HOSTS.append(server_ip)
+except:
+    pass
 
-if os.getenv('DJANGO_DOMAINING', 'False') == 'True':
-    domain_name = os.getenv('DJANGO_DOMAIN_NAME', '')
-    if domain_name:
-        ALLOWED_HOSTS.append(domain_name)
-
-print(ALLOWED_HOSTS)
-logger.debug(f"ALLOWED_HOSTS: {ALLOWED_HOSTS}")
+domain = os.getenv('DJANGO_DOMAIN_NAME', '')
+ALLOWED_HOSTS.append(domain)
 
 # Application definition
 
