@@ -46,6 +46,37 @@ def django_setts(domain):
     
     return True
 
+def django_full_setup():
+
+    manage_path = os.path.join(os.getcwd(), 'base_app', 'manage.py')
+    python_path = os.path.join(os.getcwd(), 'venv', 'bin', 'python')
+    base_dir = os.path.join(os.getcwd(), 'base_app')
+    
+    commands = [
+        ['makemigrations'],
+        ['migrate'],
+        ['collectstatic', '--noinput'],
+    ]
+    
+    for cmd in commands:
+        print(f"[+] Running: python manage.py {' '.join(cmd)}")
+        try:
+            result = subprocess.run(
+                [python_path, manage_path] + cmd,
+                cwd=base_dir,
+                capture_output=True,
+                text=True,
+                timeout=30
+            )
+            if result.returncode == 0:
+                print(f"[+] Success")
+            else:
+                print(f"[-] Failed: {result.stderr}")
+        except Exception as e:
+            print(f"[-] Error: {e}")
+    
+    return True
+
 def depends():
     try:
         python_version = subprocess.check_output(['python3', '--version'], stderr=subprocess.STDOUT).decode()
@@ -225,6 +256,7 @@ if __name__ == '__main__':
         service(domain),
         nginx(domain),
         django_setts(domain),
+        django_full_setup(),
         check_files(domain),
         reload_all(domain)
     ])
