@@ -52,10 +52,22 @@ def django_full_setup():
     python_path = os.path.join(os.getcwd(), 'venv', 'bin', 'python')
     base_dir = os.path.join(os.getcwd(), 'base_app')
     
+    mig_dir = os.path.join(base_dir, 'present', 'migrations')
+    mig_init = os.path.join(mig_dir, '__init__.py')
+    
+    if not os.path.exists(mig_dir):
+        os.makedirs(mig_dir, exist_ok=True)
+        print(f"[+] Created directory: {mig_dir}")
+    
+    if not os.path.exists(mig_init):
+        with open(mig_init, 'w') as f:
+            f.write('')
+        print(f"[+] Created: {mig_init}")
+    
     commands = [
-        ['makemigrations'],
+        ['makemigrations', 'present'],
+        ['migrate', 'present'],
         ['migrate'],
-        ['collectstatic', '--noinput'],
     ]
     
     for cmd in commands:
@@ -68,13 +80,21 @@ def django_full_setup():
                 text=True,
                 timeout=30
             )
-            if result.returncode == 0:
-                print(f"[+] Success")
-            else:
-                print(f"[-] Failed: {result.stderr}")
+            print(f"STDOUT: {result.stdout[:200]}")
+            if result.stderr:
+                print(f"STDERR: {result.stderr[:200]}")
         except Exception as e:
             print(f"[-] Error: {e}")
     
+    print("[+] Collecting static files...")
+    subprocess.run(
+        [python_path, manage_path, 'collectstatic', '--noinput'],
+        cwd=base_dir,
+        capture_output=True,
+        text=True
+    )
+    
+    print("[+] Django setup completed")
     return True
 
 def depends():
