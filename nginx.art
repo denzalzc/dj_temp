@@ -4,7 +4,10 @@ server {
     
     server_tokens off;
     
-    # Все запросы идут в Django
+    if ($request_uri ~ "\.\.|%00|%0a|%0d") {
+        return 444;
+    }
+    
     location / {
         proxy_pass http://unix:/run/gunicorn.sock;
         proxy_set_header Host $host;
@@ -14,14 +17,14 @@ server {
         proxy_connect_timeout 60s;
         proxy_send_timeout 60s;
         proxy_read_timeout 60s;
+        
+        proxy_intercept_errors on;
+        error_page 400 403 404 500 502 503 504 = @django_errors;
     }
     
-    # Даже ошибки nginx - в Django
-    error_page 400 403 404 500 502 503 504 = @django;
-    
-    location @django {
+    location @django_errors {
         internal;
-        proxy_pass http://unix:/run/gunicorn.sock;
+        proxy_pass http://unix:/run/gunicorn.sock$request_uri;
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
