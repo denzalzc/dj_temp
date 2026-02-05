@@ -198,6 +198,40 @@ def nginx(domain):
         os.remove(nginx_enabled)
     os.symlink(nginx_available, nginx_enabled)
     
+
+    print("[+] Fixing permissions for web access...")
+    
+
+    static_dir = config_data['path_to_static']
+    if os.path.exists(static_dir):
+        os.system(f"chown -R www-data:www-data {static_dir}")
+        os.system(f"chmod -R 755 {static_dir}")
+        print(f"[+] Fixed permissions for: {static_dir}")
+    
+
+    media_dir = config_data['path_to_media']
+    if os.path.exists(media_dir):
+        os.system(f"chown -R www-data:www-data {media_dir}")
+        os.system(f"chmod -R 755 {media_dir}")
+        print(f"[+] Fixed permissions for: {media_dir}")
+    
+
+    project_root = config_data['project_path']
+    current_dir = project_root
+    chain_fixed = []
+    
+
+    while current_dir != '/':
+        if os.path.exists(current_dir):
+            os.system(f"chmod +x {current_dir}")
+            chain_fixed.append(current_dir)
+        current_dir = os.path.dirname(current_dir)
+    
+    print(f"[+] Added execute permission to {len(chain_fixed)} directories in path")
+
+    os.system("nginx -t")
+    os.system("systemctl reload nginx")
+    
     print(f"[+] Nginx configured for domain: {domain}, IP: {server_ip}")
     return True
 
