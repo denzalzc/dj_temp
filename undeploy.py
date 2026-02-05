@@ -8,6 +8,9 @@ def drop_site():
         print("[-] Domain is required")
         sys.exit(1)
 
+    os.environ['DJANGO_IP_ADDRESSING'] = 'True'
+    os.environ['DJANGO_DOMAINING'] = 'False'
+
     domain = domain.replace('.', '')
 
     os.environ['DJANGO_DEBUG_BOOL'] = 'True'

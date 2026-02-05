@@ -2,11 +2,23 @@ import os
 import pwd
 import sys
 import subprocess
+import socket
 
 
-def django_debug():
+def django_setts():
     os.environ['DJANGO_DEBUG_BOOL'] = 'False'
     
+    try:
+        hostname = socket.gethostname()
+        ip_address = socket.gethostbyname(hostname)
+    except:
+        pass
+
+    os.environ['DJANGO_IP_ADDRESSING'] = 'True'
+    os.environ['DJANGO_IP_ADDRESS'] = ip_address
+    os.environ['DJANGO_DOMAINING'] = 'True'
+    os.environ['DJANGO_DOMAIN_NAME'] = domain
+
     return True
 
 def depends():
@@ -173,7 +185,7 @@ if __name__ == '__main__':
     check = all([
         depends(),
         trash(),
-        django_debug(),
+        django_setts(),
         service(domain),
         nginx(domain),
         check_files(domain),

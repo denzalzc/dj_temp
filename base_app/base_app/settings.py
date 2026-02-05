@@ -26,7 +26,18 @@ SECRET_KEY = 'django-insecure-s0qgzv&_whoq#f=g=!zz&=sc$@=h3mo-^qr1-8*$qxb4#%%)*3
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.getenv('DJANGO_DEBUG_BOOL', 'False').lower() in ('true', '1', 'yes')
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    'localhost',
+    '127.0.0.1',
+]
+
+if os.environ['DJANGO_IP_ADDRESSING'] == 'True':
+    if os.environ['DJANGO_IP_ADDRESS']:
+        ALLOWED_HOSTS.append(os.environ['DJANGO_IP_ADDRESS'])
+
+if os.environ['DJANGO_DOMAINING'] == 'True':
+    if os.environ['DJANGO_DOMAIN_NAME']:
+        ALLOWED_HOSTS.append(os.environ['DJANGO_DOMAIN_NAME'])
 
 
 # Application definition
