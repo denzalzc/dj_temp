@@ -12,6 +12,9 @@ https://docs.djangoproject.com/en/6.0/ref/settings/
 
 from pathlib import Path
 import os
+import logging
+logger = logging.getLogger(__name__)
+
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -42,7 +45,7 @@ if os.getenv('DJANGO_DOMAINING', 'False') == 'True':
         ALLOWED_HOSTS.append(domain_name)
 
 print(ALLOWED_HOSTS)
-
+logger.debug(f"ALLOWED_HOSTS: {ALLOWED_HOSTS}")
 
 # Application definition
 
