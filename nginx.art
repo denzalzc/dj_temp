@@ -26,6 +26,10 @@ server {
         proxy_read_timeout 60s;
     }
 
+    location = /.htaccess {
+        allow all;
+    }
+
     location ~ /\. {
         deny all;
         access_log off;
