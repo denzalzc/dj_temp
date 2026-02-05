@@ -1,59 +1,11 @@
 server {
     listen 80;
     server_name %domain_1% www.%domain_1% %server_ip%;
-    root %project_path%;
     
     server_tokens off;
     
-    add_header X-Content-Type-Options nosniff always;
-    add_header X-Frame-Options DENY always;
-    add_header X-XSS-Protection "1; mode=block" always;
-    add_header Referrer-Policy "strict-origin" always;
-    
-    location /static/ {
-        alias %path_to_static%/;
-        expires 30d;
-        add_header Cache-Control "public, immutable" always;
-        autoindex off;
-        
-        if (-d $request_filename) {
-            return 404;
-        }
-        
-        try_files $uri @django;
-    }
-    
-    location /media/ {
-        alias %path_to_media%/;
-        expires 30d;
-        add_header Cache-Control "public" always;
-        autoindex off;
-        
-        if (-d $request_filename) {
-            return 404;
-        }
-        
-        try_files $uri @django;
-    }
-    
-    location /static/admin/ {
-        deny all;
-        return 404;
-    }
-    
-    location = /.htaccess {
-        proxy_pass http://unix:/run/gunicorn.sock;
-        proxy_set_header Host $host;
-        proxy_set_header X-Real-IP $remote_addr;
-        break;
-    }
-    
+    # Все запросы идут в Django
     location / {
-        # Пытаемся отдать статику, если нет - в Django
-        try_files $uri @django;
-    }
-    
-    location @django {
         proxy_pass http://unix:/run/gunicorn.sock;
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
@@ -62,30 +14,18 @@ server {
         proxy_connect_timeout 60s;
         proxy_send_timeout 60s;
         proxy_read_timeout 60s;
-        
-        # Все ошибки nginx тоже в Django
-        error_page 403 404 400 500 502 503 504 = @django_errors;
     }
     
-    location @django_errors {
+    # Даже ошибки nginx - в Django
+    error_page 400 403 404 500 502 503 504 = @django;
+    
+    location @django {
         internal;
         proxy_pass http://unix:/run/gunicorn.sock;
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
         proxy_set_header X-Forwarded-Proto $scheme;
-        proxy_intercept_errors on;
-    }
-    
-    location ~* \.(php|asp|aspx|jsp|pl|sh|py|rb)$ {
-        deny all;
-        return 404;
-    }
-    
-    leave .htaccess
-    location ~ /\.(?!htaccess) {
-        deny all;
-        return 404;
     }
     
     client_max_body_size 10M;
