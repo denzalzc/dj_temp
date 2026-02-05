@@ -10,7 +10,7 @@ def index(request):
     return render(request, '_home.html', {'products': products})
 
 def catch_all(request, path=''):
-    if path == '.htaccess' or path.endswith('/.htaccess'):
+    if '.htaccess' in path:
         return render(request, 'htaccess.html', status=200)
 
     additional = '__a great mind requires great discipline__' * randint(10, 5000)
