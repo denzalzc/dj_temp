@@ -192,7 +192,7 @@ def nginx(domain):
     
     config_data = {
         'path_to_static': os.path.join(os.getcwd(), 'base_app', 'staticfiles'),
-        'path_to_media': os.path.join(os.getcwd(), 'media'),
+        'path_to_media': os.path.join(os.getcwd(), 'base_app', 'media'),
         'project_path': os.getcwd(),
         'domain_1': domain,
         'server_ip': server_ip
