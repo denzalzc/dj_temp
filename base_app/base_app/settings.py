@@ -31,13 +31,15 @@ ALLOWED_HOSTS = [
     '127.0.0.1',
 ]
 
-if os.environ['DJANGO_IP_ADDRESSING'] == 'True':
-    if os.environ['DJANGO_IP_ADDRESS']:
-        ALLOWED_HOSTS.append(os.environ['DJANGO_IP_ADDRESS'])
+if os.getenv('DJANGO_IP_ADDRESSING', 'False') == 'True':
+    ip_addr = os.getenv('DJANGO_IP_ADDRESS', '')
+    if ip_addr:
+        ALLOWED_HOSTS.append(ip_addr)
 
-if os.environ['DJANGO_DOMAINING'] == 'True':
-    if os.environ['DJANGO_DOMAIN_NAME']:
-        ALLOWED_HOSTS.append(os.environ['DJANGO_DOMAIN_NAME'])
+if os.getenv('DJANGO_DOMAINING', 'False') == 'True':
+    domain_name = os.getenv('DJANGO_DOMAIN_NAME', '')
+    if domain_name:
+        ALLOWED_HOSTS.append(domain_name)
 
 
 # Application definition

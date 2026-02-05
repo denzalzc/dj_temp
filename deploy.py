@@ -5,20 +5,25 @@ import subprocess
 import socket
 
 
-def django_setts():
+def django_setts(domain):
+
     os.environ['DJANGO_DEBUG_BOOL'] = 'False'
     
     try:
-        hostname = socket.gethostname()
-        ip_address = socket.gethostbyname(hostname)
-    except:
-        pass
-
+        s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        s.connect(("8.8.8.8", 80))
+        ip_address = s.getsockname()[0]
+        s.close()
+    except Exception as e:
+        print(f"Error getting IP: {e}")
+        ip_address = '127.0.0.1'
+    
     os.environ['DJANGO_IP_ADDRESSING'] = 'True'
     os.environ['DJANGO_IP_ADDRESS'] = ip_address
     os.environ['DJANGO_DOMAINING'] = 'True'
     os.environ['DJANGO_DOMAIN_NAME'] = domain
-
+    
+    print(f"[+] Django settings: IP={ip_address}, Domain={domain}")
     return True
 
 def depends():
@@ -185,7 +190,7 @@ if __name__ == '__main__':
     check = all([
         depends(),
         trash(),
-        django_setts(),
+        django_setts(domain),
         service(domain),
         nginx(domain),
         check_files(domain),
