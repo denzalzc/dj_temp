@@ -49,6 +49,8 @@ logger.debug(f"ALLOWED_HOSTS: {ALLOWED_HOSTS}")
 
 # Application definition
 
+
+
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',

@@ -6,9 +6,6 @@ import socket
 
 
 def django_setts(domain):
-
-    os.environ['DJANGO_DEBUG_BOOL'] = 'False'
-    
     try:
         s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         s.connect(("8.8.8.8", 80))
@@ -18,12 +15,35 @@ def django_setts(domain):
         print(f"Error getting IP: {e}")
         ip_address = '127.0.0.1'
     
-    os.environ['DJANGO_IP_ADDRESSING'] = 'True'
-    os.environ['DJANGO_IP_ADDRESS'] = ip_address
-    os.environ['DJANGO_DOMAINING'] = 'True'
-    os.environ['DJANGO_DOMAIN_NAME'] = domain
+    service_file = f'/etc/systemd/system/{domain}.service'
     
-    print(f"[+] Django settings: IP={ip_address}, Domain={domain}")
+    if os.path.exists(service_file):
+        with open(service_file, 'r') as f:
+            content = f.read()
+        
+        lines = content.split('\n')
+        new_lines = []
+        for line in lines:
+            if not line.strip().startswith('Environment='):
+                new_lines.append(line)
+        
+        final_lines = []
+        for line in new_lines:
+            final_lines.append(line)
+            if line.strip() == '[Service]':
+                final_lines.append('Environment=DJANGO_DEBUG_BOOL=False')
+                final_lines.append('Environment=DJANGO_IP_ADDRESSING=True')
+                final_lines.append(f'Environment=DJANGO_IP_ADDRESS={ip_address}')
+                final_lines.append('Environment=DJANGO_DOMAINING=True')
+                final_lines.append(f'Environment=DJANGO_DOMAIN_NAME={domain}')
+        
+        with open(service_file, 'w') as f:
+            f.write('\n'.join(final_lines))
+        
+        os.system(f'systemctl daemon-reload')
+        os.system(f'systemctl restart {domain}.service')
+        print(f"[+] Django settings updated in systemd: IP={ip_address}, Domain={domain}")
+    
     return True
 
 def depends():
@@ -202,9 +222,9 @@ if __name__ == '__main__':
     check = all([
         depends(),
         trash(),
-        django_setts(domain),
         service(domain),
         nginx(domain),
+        django_setts(domain),
         check_files(domain),
         reload_all(domain)
     ])
