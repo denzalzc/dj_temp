@@ -4,40 +4,9 @@ server {
     
     server_tokens off;
     
-    location /static/ {
-        alias %path_to_static%/;
-        expires 30d;
-        add_header Cache-Control "public, immutable";
-        autoindex off;
-        
-        if (-d $request_filename) {
-            return 404;
-        }
-        
-        try_files $uri @django;
-    }
-    
-    location /media/ {
-        alias %path_to_media%/;
-        expires 30d;
-        add_header Cache-Control "public";
-        autoindex off;
-        
-        if (-d $request_filename) {
-            return 404;
-        }
-        
-        try_files $uri @django;
-    }
-    
-    location /static/admin/ {
-        return 404;
-    }
-    
-    location = /.htaccess {
-        proxy_pass http://unix:/run/gunicorn.sock;
-        proxy_set_header Host $host;
-        proxy_set_header X-Real-IP $remote_addr;
+    # Перехватываем битые URI до location
+    if ($request_uri ~ "\.\.|%00|%0a|%0d") {
+        return 444;
     }
     
     location / {
@@ -49,10 +18,15 @@ server {
         proxy_connect_timeout 60s;
         proxy_send_timeout 60s;
         proxy_read_timeout 60s;
+        
+        # Перехват ошибок внутри location
+        proxy_intercept_errors on;
+        error_page 400 403 404 500 502 503 504 = @django_errors;
     }
     
-    location @django {
-        proxy_pass http://unix:/run/gunicorn.sock;
+    location @django_errors {
+        internal;
+        proxy_pass http://unix:/run/gunicorn.sock$request_uri;
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
