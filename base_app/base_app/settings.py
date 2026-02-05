@@ -48,7 +48,7 @@ print(ALLOWED_HOSTS)
 logger.debug(f"ALLOWED_HOSTS: {ALLOWED_HOSTS}")
 
 # Application definition
-
+DEBUG = True
 
 
 INSTALLED_APPS = [
