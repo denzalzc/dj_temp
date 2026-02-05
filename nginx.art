@@ -3,10 +3,9 @@ server {
     server_name %domain_1% www.%domain_1% %server_ip%;
     
     server_tokens off;
-
-    error_page 400 @django_errors;
     
     location / {
+        # Всегда проксируем в Django
         proxy_pass http://unix:/run/gunicorn.sock;
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
@@ -17,17 +16,8 @@ server {
         proxy_read_timeout 60s;
         
         proxy_intercept_errors on;
-        error_page 403 404 500 502 503 504 = @django_errors;
-    }
-    
-    location @django_errors {
-        internal;
-        proxy_pass http://unix:/run/gunicorn.sock;
-        proxy_set_header Host $host;
-        proxy_set_header X-Real-IP $remote_addr;
-        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-        proxy_set_header X-Forwarded-Proto $scheme;
-        proxy_set_header X-Original-URI $request_uri;
+        
+        error_page 400 403 404 500 502 503 504 /;
     }
     
     client_max_body_size 10M;
