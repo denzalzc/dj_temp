@@ -8,6 +8,8 @@ def drop_site():
         print("[-] Domain is required")
         sys.exit(1)
 
+    domain = domain.replace('.', '')
+
     os.environ['DJANGO_DEBUG_BOOL'] = 'True'
     
     service_name = f"{domain}.service"
@@ -35,3 +37,8 @@ def drop_site():
     os.system("systemctl restart nginx")
     
     print(f"[+][+][+] Site {domain} successfully undeployed")
+
+    os.system("systemctl daemon-reload")
+
+
+drop_site()

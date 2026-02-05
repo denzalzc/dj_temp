@@ -168,6 +168,8 @@ if __name__ == '__main__':
         print("[-] Domain is required")
         sys.exit(1)
 
+    domain = domain.replace('.', '')
+
     check = all([
         depends(),
         trash(),
