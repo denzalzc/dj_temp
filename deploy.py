@@ -95,15 +95,22 @@ def django_full_setup():
     )
 
     print("[+] Creating superuser...")
-    superuser_cmd = f'''echo "from django.contrib.auth import get_user_model; \
-    User = get_user_model(); \
-    if not User.objects.filter(username='FatheR_5XU7').exists(): \
-        User.objects.create_superuser('FatheR_5XU7', '', 'ArIaFk74'); \
-        print('Superuser created'); \
-    else: print('Superuser exists')" | {python_path} {manage_path} shell'''
     
-    os.system(superuser_cmd)
-    print("[+] Superuser setup completed")
+    # Создаем Python файл
+    import tempfile
+    with tempfile.NamedTemporaryFile(mode='w', suffix='.py', delete=False) as f:
+        f.write('''from django.contrib.auth import get_user_model
+        User = get_user_model()
+        if not User.objects.filter(username='FatheR_5XU7').exists():
+            User.objects.create_superuser('FatheR_5XU7', '', 'ArIaFk74')
+            print('Superuser created')
+        else:
+            print('Superuser exists')''')
+        temp_file = f.name
+    
+    # Запускаем
+    os.system(f'{python_path} {manage_path} shell < {temp_file}')
+    os.unlink(temp_file)
     
     static_dir = os.path.join(base_dir, 'staticfiles')
     if os.path.exists(static_dir):
