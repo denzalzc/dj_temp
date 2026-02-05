@@ -1,0 +1,70 @@
+# Django
+*.pyc
+*.pyo
+__pycache__/
+*.sqlite3
+*.db
+db.sqlite3
+migrations/
+!migrations/__init__.py
+
+# Environments
+.env
+.env.local
+.env.*.local
+venv/
+env/
+ENV/
+.venv/
+virtualenv/
+.env/
+.venv/
+env.bak/
+venv.bak/
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Static/media
+media/
+staticfiles/
+static/
+
+# Logs
+*.log
+logs/
+
+# OS
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# Python
+*.egg-info/
+dist/
+build/
+pip-wheel-metadata/
+Pipfile.lock
+poetry.lock
+pyproject.toml
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Django production
+*.pid
+*.socket
+*.pot
+
+# Temp files
+*.tmp
+*.temp
+
+# Coverage
+.coverage
+.coverage.*

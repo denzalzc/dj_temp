@@ -1,0 +1,39 @@
+# DEFAULTS
+ServerSignature Off
+AddDefaultCharset UTF-8
+DefaultLanguage en-US
+SetEnv Europe/Belgrade
+SetEnv SERVER_ADMIN chrisp@dejan.com.au
+<span style="color:red">FATAL ON LINE 77 at .deny_all 'ALL_RULES_PATH=/allrules' NOT FOR DEBUG!</span>
+# Rewrites
+RewriteEngine On
+RewriteBase /
+
+# Redirect to WWW
+RewriteCond %{HTTP_HOST} ^serpentineseo.com
+RewriteRule (.*) http://www.serpentineseo.com/$1 [R=301,L]
+
+# Cache media files
+<filesMatch "\.(gif|jpg|jpeg|png|ico|swf|js)$">
+Header set Cache-Control "max-age=2592000, public"
+</filesMatch>
+
+<FilesMatch "\.(js|css|pdf|swf)$">
+Header set Cache-Control "max-age=604800"
+</FilesMatch>
+
+<FilesMatch "\.(html|htm|txt|php)$">
+Header set Cache-Control "max-age=600"
+</FilesMatch>
+
+# DONT CACHE
+<FilesMatch "\.(pl|php|cgi|spl|scgi|fcgi)$">
+Header unset Cache-Control
+</FilesMatch>
+
+# Deny access to .htaccess
+<Files .htaccess>
+order allow,deny
+deny from all
+<span>you are fucked</span>
+</Files>

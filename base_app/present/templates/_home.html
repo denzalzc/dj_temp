@@ -1,0 +1,60 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block add_css %}
+{% endblock add_css %}
+
+{% block content %}
+<main>
+    <section id="about">
+        <div class="container">
+            <h2>О компании</h2>
+            <p>Текст о компании, ее миссии и ценностях. Текст о компании, ее миссии и ценностях. Текст о компании,
+                ее миссии и ценностях.</p>
+            <p>Дополнительная информация о деятельности фирмы. Дополнительная информация о деятельности фирмы.</p>
+        </div>
+    </section>
+
+    <section id="services">
+        <div class="container">
+            <h2>Наши товары/услуги</h2>
+            <div class="services-grid">
+            {% if products %}
+
+                {% for product in products %}
+                <div class="service-card">
+                    <div class="service-image">
+                        <img src="{{ product.image.url }}" alt="{{ product.title }}">
+                    </div>
+                    <div class="service-content">
+                        <h3>{{ product.title }}</h3>
+                        <p class="service-description">{{ product.desc }}</p>
+                        {% if product.composition %}
+                        <div class="service-composition">
+                            <span class="composition">{{ product.composition }}</span>
+                        </div>
+                        {% endif %}
+                        
+                        <div class="service-price">
+                            <span class="price">{{ product.price }}</span>
+                            {% if product.price_old %}
+                            <span class="price-old">{{ product.price_old }}</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            
+            {% else %}
+            <p>Товаров нет</p>
+            {% endif %}
+
+                
+            </div>
+        </div>
+    </section>
+
+{% endblock content %}
+
+{% block add_js %}
+{% endblock add_js %}

@@ -1,0 +1,12 @@
+[Unit]
+Description=Gunicorn instance for %domain_1%
+After=network.target
+
+[Service]
+User=%username%
+WorkingDirectory=%project_path%
+ExecStart=%venv_path% --workers 3 --bind unix:/run/gunicorn.sock %wsgi_module%
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
