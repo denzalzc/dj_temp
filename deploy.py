@@ -81,6 +81,7 @@ def reload_all(domain):
     os.system(f'systemctl enable {domain}.service')
     os.system(f'systemctl start {domain}.service')
     os.system('nginx -t')
+    os.system('systemctl reload nginx')
 
     return True
 

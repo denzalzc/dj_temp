@@ -41,6 +41,8 @@ if os.getenv('DJANGO_DOMAINING', 'False') == 'True':
     if domain_name:
         ALLOWED_HOSTS.append(domain_name)
 
+print(ALLOWED_HOSTS)
+
 
 # Application definition
 
