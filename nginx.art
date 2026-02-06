@@ -4,9 +4,35 @@ server {
     
     server_tokens off;
     
-    # Перехватываем битые URI до location
+    # Security headers для всего сервера
+    add_header X-XSS-Protection "1; mode=block" always;
+    add_header Content-Security-Policy "default-src 'self'" always;
+    add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" always;
+    add_header X-Frame-Options DENY always;
+    add_header X-Content-Type-Options nosniff always;
+    add_header Referrer-Policy same-origin always;
+    
+    # Zone для rate limiting
+    limit_req_zone $binary_remote_addr zone=admin:10m rate=5r/m;
+    
+    # Перехватываем битые URI
     if ($request_uri ~ "\.\.|%00|%0a|%0d") {
         return 444;
+    }
+    
+    location /YaMaIkA/login/ {
+        limit_req zone=admin burst=5 nodelay;
+        proxy_pass http://unix:/run/gunicorn.sock;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_connect_timeout 60s;
+        proxy_send_timeout 60s;
+        proxy_read_timeout 60s;
+        
+        proxy_intercept_errors on;
+        error_page 400 403 404 500 502 503 504 = @django_errors;
     }
     
     location / {
@@ -19,7 +45,6 @@ server {
         proxy_send_timeout 60s;
         proxy_read_timeout 60s;
         
-        # Перехват ошибок внутри location
         proxy_intercept_errors on;
         error_page 400 403 404 500 502 503 504 = @django_errors;
     }
